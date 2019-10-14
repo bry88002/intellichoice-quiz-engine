@@ -3,6 +3,11 @@ language: node_js
 service:
 - docker
 
-before_script:
-  - npm install -g gulp-cli
-script: gulp
+before_install:
+- docker build -t /images/api/
+- docker run -d -p 127.0.0.1:80:4567 /images/api/ /bin/sh -c "cd /images/api/; bundle exec foreman start;"
+- docker ps -a
+- docker run /images/api/ /bin/sh -c "cd /images/api; bundle exec rake test"
+
+script:
+- bundle exec rake test
