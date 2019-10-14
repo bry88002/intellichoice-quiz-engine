@@ -3,11 +3,13 @@ language: node_js
 service:
 - docker
 
-before_install:
-- docker build -t /images/api/
-- docker run -d -p 127.0.0.1:80:4567 /images/api/ /bin/sh -c "cd /images/api/; bundle exec foreman start;"
-- docker ps -a
-- docker run /images/api/ /bin/sh -c "cd /images/api; bundle exec rake test"
+env:
+  - DOCKER_COMPOSE_VERSION=1.4.2
 
-script:
-- bundle exec rake test
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  
+  -docker-compose up
